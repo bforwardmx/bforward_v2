@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BFORWARD — Agente de carga marítima · Ensenada</title>
+<link rel="icon" href="https://pics.bforward.com.mx/api/files/fotos/4zablnvukqu4ki6/browser_tab_icon_cssie5o1ze.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* TEXTO */
+  --ink:#e8eef5;          /* texto principal claro */
+  --ink-deep:#ffffff;     /* texto máximo contraste */
+  --ink-soft:#b8c2d1;     /* texto secundario */
+  --muted:#6b7a8c;        /* texto muted/labels */
+
+  /* FONDOS */
+  --paper:#0d1620;        /* fondo principal */
+  --paper-warm:#131e2b;   /* fondo de cards/secciones cálidas */
+  --paper-deep:#070d14;   /* fondo bandas profundas (footer, marquee) */
+  --paper-cool:#0a1219;   /* fondo cool alternativo */
+
+  /* AZULES (sistema único de acentos) */
+  --sea:#3b82f6;          /* azul primario - botones, CTAs */
+  --sea-deep:#2563eb;     /* azul hover/profundo */
+  --sea-bright:#60a5fa;   /* azul claro - destacados en títulos */
+  --sea-soft:#93c5fd;     /* azul muy claro - decorativo */
+  --foam:#1e3a5f;         /* azul muy oscuro - tints */
+
+  /* DORADO - sin uso actualmente, sistema unificado en azules */
+
+  /* LÍNEAS */
+  --line:rgba(232,238,245,0.10);
+  --line-strong:rgba(232,238,245,0.18);
+  --line-soft:rgba(232,238,245,0.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  overflow-x:hidden;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+/* Subtle grain for dark theme */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity:0.6;mix-blend-mode:screen;
+}
+.serif{font-family:'Fraunces',serif;font-optical-sizing:auto}
+.mono{font-family:'JetBrains Mono',monospace;font-feature-settings:"ss01"}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+/* ============ TICKER ============ */
+.ticker{
+  background:var(--paper-deep);color:var(--ink);overflow:hidden;
+  border-bottom:1px solid rgba(232,238,245,0.08);
+  position:relative;z-index:5;
+}
+.ticker-track{display:flex;gap:0;padding:9px 0;animation:slide 38s linear infinite;white-space:nowrap;width:max-content}
+.ticker-item{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:rgba(232,238,245,0.65);display:inline-flex;align-items:center;gap:10px;font-weight:500;padding:0 28px;border-right:1px solid rgba(232,238,245,0.10)}
+.ticker-item span:first-child{color:var(--sea-bright);font-weight:700;letter-spacing:0.08em}
+.ticker-dot{width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 8px #10b981}
+.ticker-dot.amber{background:#fbbf24;box-shadow:0 0 6px rgba(251,191,36,0.6)}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============ NAV ============ */
+.nav-wrap{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,22,32,0.85);
+  backdrop-filter:blur(20px) saturate(1.2);
+  -webkit-backdrop-filter:blur(20px) saturate(1.2);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  max-width:1340px;margin:0 auto;padding:0 36px;
+  height:74px;display:flex;align-items:center;justify-content:space-between;gap:32px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{height:34px;width:auto;display:block}
+
+.nav-links{display:flex;gap:4px;font-size:13.5px;font-weight:500;color:var(--ink-soft);align-items:center}
+.nav-links a{padding:8px 14px;border-radius:6px;transition:background .2s;position:relative}
+.nav-links a:hover{background:rgba(232,238,245,0.06)}
+.nav-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-right:4px;font-weight:500}
+
+.nav-actions{display:flex;gap:10px;align-items:center}
+.nav-btn-ghost{
+  padding:9px 16px;border-radius:7px;font-size:13px;font-weight:500;
+  color:var(--ink);border:1px solid var(--line);background:transparent;
+  transition:all .2s;display:inline-flex;align-items:center;gap:7px;
+}
+.nav-btn-ghost:hover{border-color:var(--ink);background:rgba(232,238,245,0.08);color:var(--ink-deep)}
+.nav-btn-solid{
+  padding:10px 18px;border-radius:7px;font-size:13px;font-weight:700;
+  background:var(--ink);color:var(--paper-deep);
+  transition:all .2s;display:inline-flex;align-items:center;gap:7px;
+}
+.nav-btn-solid:hover{background:var(--sea);color:var(--paper-deep)}
+.nav-btn-solid svg{transition:transform .2s}
+.nav-btn-solid:hover svg{transform:translateX(3px)}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;min-height:calc(100vh - 110px);
+  display:flex;align-items:stretch;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.hero-grid{
+  max-width:1340px;margin:0 auto;width:100%;padding:0 36px;
+  display:grid;grid-template-columns:1.15fr 1fr;
+  gap:0;position:relative;
+}
+.hero-left{
+  padding:80px 56px 80px 0;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+.hero-left::after{
+  content:"";position:absolute;right:0;top:8%;bottom:8%;width:1px;
+  background:var(--line);
+}
+.hero-meta-top{display:flex;align-items:center;gap:14px;margin-bottom:36px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted)}
+.hero-meta-top::before{content:"";width:32px;height:1px;background:var(--ink)}
+.hero-meta-top strong{color:var(--ink);font-weight:600}
+
+.hero-title{
+  font-family:'Fraunces',serif;
+  font-weight:300;
+  font-size:clamp(54px,7.6vw,118px);
+  line-height:0.94;
+  letter-spacing:-0.045em;
+  color:var(--ink);
+  margin-bottom:28px;
+  font-variation-settings:"opsz" 144, "SOFT" 30;
+}
+.hero-title .word-italic{
+  font-style:italic;font-weight:400;color:var(--sea-bright);
+  font-variation-settings:"opsz" 144, "SOFT" 100;
+}
+.hero-title .word-block{
+  display:inline-block;background:var(--ink);color:var(--paper-deep);
+  padding:0 0.18em 0.05em;border-radius:6px;font-weight:600;
+  font-style:normal;
+}
+
+.hero-sub{
+  font-size:17px;color:var(--ink-soft);line-height:1.65;
+  max-width:480px;margin-bottom:36px;font-weight:400;
+}
+.hero-sub b{font-weight:600;color:var(--ink)}
+
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:48px}
+.btn-primary{
+  padding:15px 26px;background:var(--sea);color:#0a1219;
+  border-radius:8px;font-size:14px;font-weight:700;
+  display:inline-flex;align-items:center;gap:10px;
+  transition:all .25s;
+}
+.btn-primary:hover{background:var(--sea-deep);transform:translateY(-1px);box-shadow:0 12px 28px rgba(59,130,246,0.35)}
+.btn-primary svg{transition:transform .25s}
+.btn-primary:hover svg{transform:translateX(4px)}
+.btn-outline{
+  padding:14px 24px;background:transparent;color:var(--ink);
+  border-radius:8px;font-size:14px;font-weight:500;
+  border:1px solid var(--line);
+  display:inline-flex;align-items:center;gap:8px;transition:all .25s;
+}
+.btn-outline:hover{border-color:var(--sea);background:rgba(59,130,246,0.08);color:var(--sea-bright)}
+
+.hero-services-line{display:flex;gap:0;border-top:1px solid var(--line);padding-top:24px;flex-wrap:wrap}
+.hero-srv{
+  flex:1;min-width:120px;padding-right:20px;
+}
+.hero-srv:not(:last-child){border-right:1px solid var(--line);margin-right:20px}
+.hero-srv-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px}
+.hero-srv-name{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-0.01em}
+
+/* HERO RIGHT - imagen + tracking */
+.hero-right{
+  position:relative;padding:0 0 0 56px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.hero-image{
+  position:relative;border-radius:14px;overflow:hidden;
+  height:380px;margin-bottom:-90px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+  background:linear-gradient(135deg,var(--paper-deep),var(--foam));
+  border:1px solid var(--line);
+}
+.hero-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 14s ease}
+.hero-image:hover img{transform:scale(1.08)}
+.hero-image-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 50%,rgba(5,13,26,0.55) 100%);
+  pointer-events:none;
+}
+.hero-image-tag{
+  position:absolute;top:18px;left:18px;
+  background:rgba(13,22,32,0.88);backdrop-filter:blur(10px);
+  border:1px solid rgba(232,238,245,0.15);
+  padding:7px 12px;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+}
+.hero-image-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+.hero-image-bottom{
+  position:absolute;bottom:18px;left:18px;right:18px;
+  display:flex;justify-content:space-between;align-items:flex-end;color:var(--ink);
+}
+.hero-image-coords{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.05em;opacity:0.85}
+.hero-image-coords strong{display:block;font-size:13px;letter-spacing:0.02em}
+
+/* TRACKING PANEL */
+.track-panel{
+  background:rgba(8,14,20,0.85);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px;
+  position:relative;z-index:2;
+  box-shadow:0 20px 50px -10px rgba(0,0,0,0.5);
+}
+.track-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.track-panel-title{display:flex;align-items:center;gap:12px}
+.track-panel-icon{
+  width:38px;height:38px;border-radius:9px;
+  background:var(--sea);color:#0d1620;
+  display:grid;place-items:center;
+}
+.track-panel-title strong{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;display:block}
+.track-panel-title small{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;font-weight:500}
+.track-panel-badge{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:500;
+}
+.track-panel-badge::before{content:"●";color:#10b981;margin-right:5px}
+
+.track-field{margin-bottom:12px}
+.track-field-label{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:6px;display:flex;align-items:center;gap:6px;
+}
+.track-input{
+  width:100%;padding:13px 14px;
+  border:1px solid var(--line);border-radius:8px;
+  font-size:14px;font-weight:500;color:var(--ink);
+  font-family:'JetBrains Mono',monospace;outline:none;
+  transition:all .2s;background:rgba(232,238,245,0.04);
+}
+.track-input:focus{border-color:var(--sea);background:rgba(232,238,245,0.07);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.track-input::placeholder{color:rgba(232,238,245,0.35);font-weight:400;letter-spacing:0.04em}
+
+.track-submit{
+  width:100%;padding:14px;background:var(--ink);color:var(--paper);
+  border-radius:8px;font-family:'Fraunces',serif;
+  font-size:15px;font-weight:600;letter-spacing:-0.005em;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all .2s;margin-top:6px;
+}
+.track-submit:hover{background:var(--sea-deep);color:#0d1620}
+.track-submit svg{transition:transform .2s}
+.track-submit:hover svg{transform:translateX(3px)}
+
+.track-divider{display:flex;align-items:center;gap:10px;margin:14px 0;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.08em;text-transform:uppercase}
+.track-divider::before,.track-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.portal-btn{
+  width:100%;padding:13px;background:transparent;color:var(--ink);
+  border-radius:8px;font-size:13.5px;font-weight:600;
+  border:1px solid var(--line);transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.portal-btn:hover{border-color:var(--sea);background:rgba(59,130,246,0.06);color:var(--sea-bright)}
+
+/* RESULT */
+.track-result{display:none;margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}
+.track-result.show{display:block;animation:fadeUp .5s ease both}
+.res-status{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.res-ref{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.06em;color:var(--ink)}
+.res-pill{padding:5px 11px;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em}
+.pill-transit{background:rgba(16,185,129,0.18);color:#34d399;border:1px solid rgba(16,185,129,0.3)}
+.pill-port{background:rgba(59,130,246,0.18);color:#60a5fa;border:1px solid rgba(59,130,246,0.3)}
+.pill-zarpe{background:rgba(245,158,11,0.18);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+
+.route-ports{display:flex;justify-content:space-between;margin-bottom:8px;align-items:flex-end}
+.route-port-name{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-0.02em}
+.route-port-sub{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px}
+.route-track{position:relative;height:2px;background:var(--line);margin:10px 0 6px}
+.route-fill{height:100%;background:var(--ink);transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.route-ship-icon{position:absolute;top:-9px;font-size:18px;transition:left 1.2s cubic-bezier(.4,0,.2,1);background:var(--paper);padding:0 4px}
+.route-pct{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--muted);text-align:center;margin-bottom:14px;letter-spacing:0.06em;text-transform:uppercase}
+.res-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.res-meta-item{background:rgba(232,238,245,0.04);border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.res-meta-item label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);display:block;margin-bottom:4px}
+.res-meta-item strong{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--ink)}
+.cont-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px}
+.cont-list{display:flex;flex-direction:column;gap:6px}
+.cont-row{display:flex;align-items:center;justify-content:space-between;background:rgba(232,238,245,0.04);border:1px solid var(--line);border-radius:7px;padding:9px 12px}
+.cont-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--ink)}
+.cont-type{background:var(--ink);color:var(--paper);padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.04em}
+.cont-eta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:500}
+
+/* ============ MARQUEE STATEMENT ============ */
+.marquee-section{background:var(--paper-deep);color:var(--ink);overflow:hidden;padding:80px 0 0;position:relative}
+.marquee-section::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,238,245,0.2),transparent)}
+.marquee-grid{max-width:1340px;margin:0 auto;padding:0 36px 80px;display:grid;grid-template-columns:280px 1fr;gap:60px;align-items:start}
+.marquee-meta{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(232,238,245,0.5);font-weight:500;display:flex;flex-direction:column;gap:14px;position:sticky;top:120px}
+.marquee-meta div::before{content:"";display:block;width:24px;height:1px;background:var(--sea-bright);margin-bottom:10px}
+.marquee-meta strong{color:var(--sea-bright);font-weight:600;display:block;margin-bottom:4px}
+
+.marquee-text{
+  font-family:'Fraunces',serif;font-weight:300;
+  font-size:clamp(28px,3.6vw,52px);line-height:1.15;
+  letter-spacing:-0.025em;color:var(--ink);
+}
+.marquee-text .em{font-style:italic;color:var(--sea-bright);font-weight:400}
+.marquee-text .strike{text-decoration:line-through;text-decoration-thickness:2px;color:rgba(232,238,245,0.4)}
+.marquee-text .blk{background:var(--ink);color:var(--paper-deep);padding:0 0.2em;border-radius:4px;font-weight:500}
+
+.marquee-stats{
+  margin-top:50px;padding-top:40px;border-top:1px solid rgba(232,238,245,0.12);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:36px;
+}
+.mstat{display:flex;flex-direction:column;gap:8px}
+.mstat-num{font-family:'Fraunces',serif;font-weight:300;font-size:64px;line-height:0.95;letter-spacing:-0.04em;color:var(--ink)}
+.mstat-num em{font-style:italic;color:var(--sea-bright);font-weight:400}
+.mstat-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,238,245,0.55);font-weight:500;line-height:1.4}
+
+.mscroll{
+  border-top:1px solid rgba(232,238,245,0.12);padding:22px 0;overflow:hidden;white-space:nowrap;
+  background:var(--paper-deep);
+}
+.mscroll-track{display:inline-flex;gap:48px;animation:slide 50s linear infinite;will-change:transform}
+.mscroll-item{font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:38px;color:rgba(232,238,245,0.4);letter-spacing:-0.02em;display:inline-flex;align-items:center;gap:48px}
+.mscroll-item::after{content:"✦";color:var(--sea);font-size:18px;font-style:normal}
+
+/* ============ SERVICES ============ */
+.services-wrap{background:var(--paper);padding:120px 36px 100px}
+.services-inner{max-width:1340px;margin:0 auto}
+.section-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:64px;align-items:end}
+.section-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:10px;margin-bottom:18px}
+.section-eyebrow::before{content:"";width:24px;height:1px;background:var(--ink)}
+.section-h{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(40px,5.5vw,82px);line-height:0.96;letter-spacing:-0.04em;color:var(--ink)}
+.section-h em{font-style:italic;color:var(--sea-bright);font-weight:400}
+.section-sub{font-size:16px;color:var(--ink-soft);line-height:1.7;max-width:440px;font-weight:400}
+.section-sub b{color:var(--ink);font-weight:600}
+
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.svc-card{background:var(--paper);padding:0;display:flex;flex-direction:column;transition:background .35s}
+.svc-card:hover{background:var(--paper-warm)}
+.svc-img{position:relative;height:280px;overflow:hidden;background:var(--ink-soft)}
+.svc-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.4,0,.2,1);filter:contrast(1.05) brightness(0.85)}
+.svc-card:hover .svc-img img{transform:scale(1.06);filter:contrast(1.05) brightness(1)}
+.svc-img-num{position:absolute;top:18px;left:18px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.14em;color:var(--ink-deep);text-transform:uppercase;background:rgba(7,13,20,0.75);backdrop-filter:blur(8px);padding:6px 11px;border-radius:4px;border:1px solid rgba(232,238,245,0.12)}
+.svc-img-tag{position:absolute;bottom:18px;left:18px;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:500;letter-spacing:0.12em;color:rgba(232,238,245,0.85);text-transform:uppercase}
+.svc-body{padding:28px 28px 32px;flex:1;display:flex;flex-direction:column}
+.svc-title{font-family:'Fraunces',serif;font-size:26px;font-weight:500;color:var(--ink);margin-bottom:10px;letter-spacing:-0.025em;line-height:1.1}
+.svc-title em{font-style:italic;color:var(--sea-bright)}
+.svc-desc{font-size:14.5px;color:var(--ink-soft);line-height:1.65;margin-bottom:22px;flex:1}
+.svc-list{display:flex;flex-direction:column;gap:8px;padding-top:16px;border-top:1px dashed var(--line)}
+.svc-item{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);font-weight:500;letter-spacing:0.02em}
+.svc-item-num{color:var(--muted);font-weight:500;flex-shrink:0;min-width:24px}
+.svc-item-arrow{color:var(--sea-bright);margin-left:auto;font-size:14px;line-height:1}
+
+/* ============ PROCESS ============ */
+.process-wrap{background:var(--paper-warm);padding:120px 36px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.process-inner{max-width:1340px;margin:0 auto}
+.process-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:80px;align-items:center}
+.process-img-stack{position:relative;height:560px}
+.pimg{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 24px 48px -12px rgba(0,0,0,0.5);border:6px solid var(--paper-warm)}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block}
+.pimg-1{top:0;left:0;width:62%;height:60%}
+.pimg-2{bottom:0;right:0;width:58%;height:55%;border-radius:12px}
+.pimg-tag{position:absolute;background:var(--sea);color:var(--paper-deep);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;padding:8px 14px;border-radius:6px;font-weight:700;text-transform:uppercase;box-shadow:0 8px 20px rgba(59,130,246,0.35)}
+.pimg-tag-1{top:-12px;right:8%}
+.pimg-tag-2{bottom:-12px;left:8%}
+
+.process-steps{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.pstep{padding:24px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:60px 1fr auto;gap:24px;align-items:start;cursor:default;transition:padding .25s}
+.pstep:hover{padding-left:14px}
+.pstep-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.06em;padding-top:4px}
+.pstep-content strong{font-family:'Fraunces',serif;font-size:24px;font-weight:500;color:var(--ink);letter-spacing:-0.02em;display:block;margin-bottom:6px;line-height:1.15}
+.pstep-content strong em{font-style:italic;color:var(--sea-bright);font-weight:400}
+.pstep-content p{font-size:14px;color:var(--ink-soft);line-height:1.6;max-width:480px}
+.pstep-icon{font-size:24px;padding-top:4px;opacity:0.5;transition:opacity .25s}
+.pstep:hover .pstep-icon{opacity:1}
+
+/* ============ ROUTES MAP ============ */
+.routes-wrap{background:var(--paper-deep);color:var(--ink);padding:100px 36px;position:relative;overflow:hidden}
+.routes-inner{max-width:1340px;margin:0 auto;position:relative;z-index:2}
+.routes-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:50px;align-items:end}
+.routes-head .section-eyebrow{color:rgba(232,238,245,0.5)}
+.routes-head .section-eyebrow::before{background:var(--sea-bright)}
+.routes-head .section-h{color:var(--ink);font-weight:300}
+.routes-head .section-h em{color:var(--sea-bright);font-style:italic}
+.routes-head .section-sub{color:rgba(232,238,245,0.65)}
+.routes-head .section-sub b{color:var(--ink)}
+
+.routes-table{border-top:1px solid rgba(232,238,245,0.12);border-bottom:1px solid rgba(232,238,245,0.12)}
+.route-row{
+  display:grid;grid-template-columns:60px 1fr 1fr 100px 1fr 120px;
+  gap:24px;align-items:center;padding:22px 0;
+  border-bottom:1px solid rgba(232,238,245,0.08);
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(232,238,245,0.85);
+  transition:background .25s,padding .25s;
+}
+.route-row:last-child{border-bottom:none}
+.route-row:hover{background:rgba(232,238,245,0.03);padding-left:14px}
+.route-row.header{font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,238,245,0.4);font-weight:600;padding:14px 0}
+.route-row.header:hover{background:transparent;padding-left:0}
+.route-num{color:var(--sea-bright);font-weight:700}
+.route-port{font-family:'Fraunces',serif;font-style:italic;font-size:18px;font-weight:400;color:var(--ink);letter-spacing:-0.01em}
+.route-status{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:500}
+.route-status::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sea-bright);box-shadow:0 0 6px var(--sea-bright)}
+.route-status.live::before{background:#10b981;box-shadow:0 0 6px #10b981}
+.route-eta{color:rgba(232,238,245,0.7)}
+.route-arrow{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--sea-bright);font-weight:500}
+
+/* ============ ABOUT ============ */
+.about-wrap{padding:120px 36px;background:var(--paper)}
+.about-inner{max-width:1340px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:80px;align-items:center}
+.about-imgs{position:relative;height:620px}
+.aimg{position:absolute;border-radius:14px;overflow:hidden;box-shadow:0 24px 48px -12px rgba(0,0,0,0.5)}
+.aimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.4s ease}
+.aimg:hover img{transform:scale(1.06)}
+.aimg-main{top:0;left:0;width:75%;height:62%}
+.aimg-side{bottom:0;right:0;width:62%;height:48%;border:8px solid var(--paper)}
+.aimg-stamp{
+  position:absolute;top:50%;right:8%;
+  width:140px;height:140px;border-radius:50%;
+  background:var(--sea);color:#0a1219;
+  display:grid;place-items:center;text-align:center;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;line-height:1.2;
+  transform:rotate(-12deg);box-shadow:0 12px 32px rgba(59,130,246,0.45),0 0 0 6px rgba(13,22,32,0.6);
+  z-index:3;
+}
+.aimg-stamp small{display:block;font-family:'JetBrains Mono',monospace;font-style:normal;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;margin-top:4px;opacity:0.85}
+
+.about-copy .section-eyebrow{margin-bottom:18px}
+.about-quote{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:24px;line-height:1.4;color:var(--ink);
+  border-left:3px solid var(--sea);padding:8px 0 8px 24px;
+  margin:32px 0;letter-spacing:-0.015em;
+}
+.about-quote-attr{display:block;font-style:normal;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:14px;font-weight:500}
+.afeats{display:grid;gap:0;border-top:1px solid var(--line)}
+.afeat{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--line);align-items:start;transition:padding .25s}
+.afeat:hover{padding-left:12px}
+.afeat-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.06em;padding-top:4px}
+.afeat strong{display:block;font-family:'Fraunces',serif;font-size:19px;font-weight:500;color:var(--ink);margin-bottom:4px;letter-spacing:-0.015em}
+.afeat span{font-size:14px;color:var(--ink-soft);line-height:1.6}
+
+/* ============ FLEET BAND (image showcase) ============ */
+.fleet-band{padding:0;background:var(--paper-deep);position:relative;overflow:hidden}
+.fleet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.fleet-cell{position:relative;height:340px;overflow:hidden;border-right:1px solid rgba(232,238,245,0.06)}
+.fleet-cell:last-child{border-right:none}
+.fleet-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.4s cubic-bezier(.4,0,.2,1);filter:brightness(0.7) contrast(1.1)}
+.fleet-cell:hover img{transform:scale(1.08);filter:brightness(1) contrast(1.05)}
+.fleet-cell-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,10,16,0.3),rgba(5,10,16,0.85));pointer-events:none}
+.fleet-cell-content{position:absolute;bottom:24px;left:24px;right:24px;color:var(--ink);z-index:2}
+.fleet-cell-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.16em;color:var(--ink-deep);font-weight:700;margin-bottom:8px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,0.18);border:1px solid rgba(59,130,246,0.35);padding:5px 10px;border-radius:4px;backdrop-filter:blur(4px)}
+.fleet-cell-title{font-family:'Fraunces',serif;font-size:24px;font-weight:500;letter-spacing:-0.02em;line-height:1.15;color:var(--ink-deep)}
+.fleet-cell-title em{font-style:italic;font-weight:400;color:var(--sea-bright)}
+
+/* ============ CONTACT ============ */
+.contact-wrap{background:var(--paper);padding:120px 36px;border-top:1px solid var(--line)}
+.contact-inner{max-width:1340px;margin:0 auto}
+.contact-head{margin-bottom:60px;max-width:780px}
+.contact-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:stretch}
+.contact-card{
+  background:var(--paper-deep);border-radius:18px;padding:48px;
+  position:relative;overflow:hidden;color:var(--ink);
+  display:flex;flex-direction:column;justify-content:space-between;
+  min-height:420px;
+  border:1px solid var(--line);
+}
+.contact-card::before{
+  content:"";position:absolute;top:-30%;right:-15%;width:480px;height:480px;
+  background:radial-gradient(circle,rgba(59,130,246,0.18),transparent 65%);
+  pointer-events:none;
+}
+.contact-card-head{position:relative;z-index:2}
+.contact-card-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,238,245,0.5);font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.contact-card-eyebrow::before{content:"";width:24px;height:1px;background:var(--sea-bright)}
+.contact-card-title{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(36px,4.4vw,56px);line-height:0.98;letter-spacing:-0.035em;margin-bottom:24px}
+.contact-card-title em{font-style:italic;color:var(--sea-bright);font-weight:400}
+
+.contact-info-list{display:grid;gap:12px;position:relative;z-index:2}
+.cinfo-row{
+  background:rgba(232,238,245,0.05);border:1px solid rgba(232,238,245,0.10);
+  border-radius:10px;padding:14px 18px;
+  display:grid;grid-template-columns:90px 1fr;gap:18px;align-items:center;
+  transition:background .2s,border-color .2s;
+}
+.cinfo-row:hover{background:rgba(232,238,245,0.08);border-color:rgba(232,238,245,0.18)}
+.cinfo-row label{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,238,245,0.45)}
+.cinfo-row a,.cinfo-row span{font-family:'Fraunces',serif;font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-0.01em}
+
+.contact-cta{
+  background:var(--paper-warm);border-radius:18px;padding:48px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid var(--line);position:relative;overflow:hidden;
+}
+.contact-cta-icon{
+  position:absolute;top:24px;right:24px;width:54px;height:54px;
+  background:var(--sea);color:#0a1219;border-radius:12px;
+  display:grid;place-items:center;font-size:24px;
+}
+.contact-cta h3{font-family:'Fraunces',serif;font-weight:300;font-size:36px;line-height:1.05;letter-spacing:-0.03em;margin-bottom:14px;color:var(--ink);max-width:320px}
+.contact-cta h3 em{font-style:italic;color:var(--sea-bright);font-weight:400}
+.contact-cta p{font-size:15px;color:var(--ink-soft);line-height:1.65;margin-bottom:32px;max-width:400px}
+.cta-btns{display:grid;gap:10px}
+.btn-cta-solid{
+  padding:16px 24px;background:var(--sea);color:#0a1219;
+  border-radius:8px;font-family:'Fraunces',serif;font-size:16px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  transition:all .25s;
+}
+.btn-cta-solid:hover{background:var(--sea-deep);box-shadow:0 8px 24px rgba(59,130,246,0.3)}
+.btn-cta-solid svg{transition:transform .25s}
+.btn-cta-solid:hover svg{transform:translateX(4px)}
+.btn-cta-line{
+  padding:14px 24px;background:transparent;color:var(--ink);
+  border-radius:8px;font-family:'Fraunces',serif;font-size:15px;font-weight:500;
+  border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  transition:all .25s;
+}
+.btn-cta-line:hover{border-color:var(--sea);background:rgba(59,130,246,0.06);color:var(--sea-bright)}
+
+/* ============ FOOTER ============ */
+.footer{background:var(--paper-deep);color:var(--ink);padding:60px 36px 30px;position:relative;overflow:hidden;border-top:1px solid var(--line)}
+.footer-inner{max-width:1340px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;padding-bottom:40px;border-bottom:1px solid rgba(232,238,245,0.10)}
+.footer-brand img{height:40px;margin-bottom:18px;display:block}
+.footer-brand p{font-size:13.5px;color:rgba(232,238,245,0.55);line-height:1.65;max-width:340px}
+.footer-col h5{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--sea-bright);margin-bottom:18px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-col a{font-family:'Fraunces',serif;font-size:15px;font-weight:400;color:var(--ink);transition:color .2s;letter-spacing:-0.005em}
+.footer-col a:hover{color:var(--sea-bright)}
+.footer-col span{font-family:'Fraunces',serif;font-size:14px;color:rgba(232,238,245,0.65);font-weight:400;letter-spacing:-0.005em;line-height:1.5;display:block}
+
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;flex-wrap:wrap;gap:16px}
+.footer-bottom small{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(232,238,245,0.4);letter-spacing:0.08em}
+.footer-bottom .footer-coords{display:flex;gap:18px;flex-wrap:wrap}
+
+.footer-mega{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(80px,16vw,260px);line-height:0.85;letter-spacing:-0.06em;color:rgba(232,238,245,0.05);text-align:center;margin-top:30px;font-style:italic;user-select:none}
+
+/* ============ FLOAT BAR ============ */
+.float-bar{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:10px}
+.float-pill{
+  padding:12px 16px;background:var(--sea);color:#0a1219;
+  border-radius:10px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  letter-spacing:0.06em;text-transform:uppercase;
+  box-shadow:0 12px 32px rgba(59,130,246,0.35);
+  transition:all .25s;display:flex;align-items:center;gap:8px;
+}
+.float-pill:hover{background:var(--sea-bright);transform:translateX(-4px)}
+.float-pill.alt{background:var(--paper-warm);color:var(--ink);border:1px solid var(--line-strong)}
+.float-pill.alt:hover{background:var(--foam);border-color:var(--sea)}
+
+/* ============ ANIMATIONS ============ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heroIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.hero-meta-top{animation:heroIn .6s ease both}
+.hero-title{animation:heroIn .8s .12s ease both}
+.hero-sub{animation:heroIn .7s .26s ease both}
+.hero-ctas{animation:heroIn .7s .34s ease both}
+.hero-services-line{animation:heroIn .7s .42s ease both}
+.hero-image{animation:heroIn .9s .20s ease both}
+.track-panel{animation:heroIn .8s .40s ease both}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.4,0,.2,1),transform .8s cubic-bezier(.4,0,.2,1)}
+.reveal.on{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1080px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-left{padding:60px 0;border-right:none}
+  .hero-left::after{display:none}
+  .hero-right{padding:0;margin-bottom:60px}
+  .hero-image{margin-bottom:-70px}
+  .marquee-grid{grid-template-columns:1fr;gap:30px}
+  .marquee-meta{position:static;flex-direction:row;flex-wrap:wrap;gap:20px}
+  .marquee-stats{grid-template-columns:repeat(2,1fr)}
+  .section-head{grid-template-columns:1fr;gap:30px}
+  .svc-grid{grid-template-columns:1fr}
+  .process-grid{grid-template-columns:1fr;gap:50px}
+  .process-img-stack{height:480px}
+  .routes-head{grid-template-columns:1fr;gap:30px}
+  .route-row{grid-template-columns:40px 1fr 1fr;gap:14px;font-size:11px}
+  .route-row > *:nth-child(n+4){display:none}
+  .about-inner{grid-template-columns:1fr;gap:60px}
+  .about-imgs{height:520px}
+  .fleet-grid{grid-template-columns:1fr;gap:0}
+  .fleet-cell{border-right:none;border-bottom:1px solid rgba(232,238,245,0.06);height:280px}
+  .contact-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:30px}
+  .nav-links{display:none}
+}
+@media(max-width:640px){
+  .nav{padding:0 20px;height:64px}
+  .nav-logo img{height:28px}
+  .nav-actions .nav-btn-ghost{display:none}
+  .hero-grid{padding:0 20px}
+  .hero-left{padding:40px 0}
+  .hero-image{height:300px}
+  .services-wrap,.process-wrap,.about-wrap,.contact-wrap,.routes-wrap{padding-left:20px;padding-right:20px}
+  .pimg-1,.pimg-2{position:relative;width:100%;height:240px;margin-bottom:14px;display:block}
+  .pimg-1{top:auto;left:auto}
+  .pimg-2{bottom:auto;right:auto}
+  .process-img-stack{height:auto;display:flex;flex-direction:column;gap:14px}
+  .pimg-tag{display:none}
+  .aimg-main{width:100%;height:55%}
+  .aimg-side{width:60%;height:42%}
+  .aimg-stamp{width:100px;height:100px;font-size:11px;right:0;top:42%}
+  .contact-card,.contact-cta{padding:32px}
+  .footer-top{grid-template-columns:1fr;padding:0 0 30px}
+  .float-bar{right:10px;gap:8px}
+  .float-pill{padding:10px 12px;font-size:10px}
+  .marquee-stats{grid-template-columns:1fr 1fr;gap:24px}
+  .mstat-num{font-size:48px}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><span>ENS → MZT</span><span class="ticker-dot"></span><span>EN PUERTO · 03 MAY 2026</span></span>
+    <span class="ticker-item"><span>SHA → ENS</span><span class="ticker-dot"></span><span>EN TRÁNSITO · ETA 18 MAY</span></span>
+    <span class="ticker-item"><span>BUSAN → ENS</span><span class="ticker-dot amber"></span><span>ZARPE CONFIRMADO · 12 MAY</span></span>
+    <span class="ticker-item"><span>HAMBURG → ENS</span><span class="ticker-dot"></span><span>CANAL DE PANAMÁ · 38%</span></span>
+    <span class="ticker-item"><span>ENS PORT</span><span class="ticker-dot"></span><span>OPERANDO 24/7</span></span>
+    <span class="ticker-item"><span>ENS → MZT</span><span class="ticker-dot"></span><span>EN PUERTO · 03 MAY 2026</span></span>
+    <span class="ticker-item"><span>SHA → ENS</span><span class="ticker-dot"></span><span>EN TRÁNSITO · ETA 18 MAY</span></span>
+    <span class="ticker-item"><span>BUSAN → ENS</span><span class="ticker-dot amber"></span><span>ZARPE CONFIRMADO · 12 MAY</span></span>
+    <span class="ticker-item"><span>HAMBURG → ENS</span><span class="ticker-dot"></span><span>CANAL DE PANAMÁ · 38%</span></span>
+    <span class="ticker-item"><span>ENS PORT</span><span class="ticker-dot"></span><span>OPERANDO 24/7</span></span>
+  </div>
+</div>
+
+<!-- FLOAT BAR -->
+<div class="float-bar">
+  <button class="float-pill" onclick="document.getElementById('tracking-panel').scrollIntoView({behavior:'smooth',block:'center'})">⚓ Rastrear</button>
+  <button class="float-pill alt" onclick="window.open('https://clientes.bforward.com.mx', '_blank')">◉ Portal</button>
+</div>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <div class="nav">
+    <a href="#" class="nav-logo">
+      <img src="https://pics.bforward.com.mx/api/files/fotos/qn50l1ti8pbrexd/blogicstic_u6baysa8x6.png" alt="BFORWARD Logistics"/>
+    </a>
+    <nav class="nav-links">
+      <a href="#servicios"><span class="nav-num">01</span>Servicios</a>
+      <a href="#proceso"><span class="nav-num">02</span>Proceso</a>
+      <a href="#rutas"><span class="nav-num">03</span>Rutas</a>
+      <a href="#nosotros"><span class="nav-num">04</span>Nosotros</a>
+      <a href="#contacto"><span class="nav-num">05</span>Contacto</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="nav-btn-ghost" onclick="document.getElementById('tracking-panel').scrollIntoView({behavior:'smooth',block:'center'})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Rastrear
+      </button>
+      <button class="nav-btn-solid" onclick="window.open('https://clientes.bforward.com.mx', '_blank')">
+        Portal
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-meta-top">
+        <strong>Est. 2009</strong><span>·</span><span>Ensenada · Baja California</span><span>·</span><span>31°51'N 116°36'W</span>
+      </div>
+      <h1 class="hero-title">
+        Tu carga<br>
+        <span class="word-italic">cruza el mar.</span><br>
+        Nosotros<br>
+        <span class="word-block">la cuidamos.</span>
+      </h1>
+      <p class="hero-sub">
+        Agentes de carga marítima especializados en importación desde <b>Asia, Europa y América</b> hacia el puerto de Ensenada — con coordinación terrestre hasta tu almacén. Sin intermediarios, sin sorpresas.
+      </p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="document.getElementById('tracking-panel').scrollIntoView({behavior:'smooth',block:'center'})">
+          Rastrear mi embarque
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button class="btn-outline" onclick="document.getElementById('servicios').scrollIntoView({behavior:'smooth'})">
+          Conocer servicios
+        </button>
+      </div>
+      <div class="hero-services-line">
+        <div class="hero-srv">
+          <div class="hero-srv-num">01 / FCL · LCL</div>
+          <div class="hero-srv-name">Marítimo</div>
+        </div>
+        <div class="hero-srv">
+          <div class="hero-srv-num">02 / DOOR-TO-DOOR</div>
+          <div class="hero-srv-name">Terrestre</div>
+        </div>
+        <div class="hero-srv">
+          <div class="hero-srv-num">03 / DOC + DESPACHO</div>
+          <div class="hero-srv-name">Aduana</div>
+        </div>
+        <div class="hero-srv">
+          <div class="hero-srv-num">04 / ES · EN</div>
+          <div class="hero-srv-name">Bilingüe</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-image">
+        <img src="https://pics.bforward.com.mx/api/files/pbc_12761900/vqfvrsrcmmnkmlr/chuttersnap_9c_ce_s9_sg6n_u_unsplash_bzjs0n4ybo.jpg" alt="Buque portacontenedores en operación"/>
+        <div class="hero-image-overlay"></div>
+        <div class="hero-image-tag">Live · Puerto de Ensenada</div>
+        <div class="hero-image-bottom">
+          <div class="hero-image-coords">
+            31°51'29"N · 116°36'12"W
+            <strong>Terminal Marítima Ensenada</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-panel" id="tracking-panel">
+        <div class="track-panel-header">
+          <div class="track-panel-title">
+            <div class="track-panel-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-5 7 5v12"/><path d="M9 14h6"/><path d="M9 10h6"/></svg>
+            </div>
+            <div>
+              <strong>Rastrear embarque</strong>
+              <small>Expediente · BL · Contenedor</small>
+            </div>
+          </div>
+          <div class="track-panel-badge">Sistema activo</div>
+        </div>
+
+        <div class="track-field">
+          <div class="track-field-label">Número de expediente o BL</div>
+          <input class="track-input" id="trackRef" type="text" placeholder="BFW-2024-0123 · MBLMX12345"/>
+        </div>
+        <div class="track-field">
+          <div class="track-field-label">Contenedor (opcional)</div>
+          <input class="track-input" id="trackCont" type="text" placeholder="MSCU1234567"/>
+        </div>
+        <button class="track-submit" onclick="doTrack()">
+          Consultar estado
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+        <div class="track-divider">o accede a tu cuenta</div>
+        <button class="portal-btn" onclick="window.open('https://clientes.bforward.com.mx', '_blank')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Portal de clientes — Ver mis expedientes
+        </button>
+
+        <div class="track-result" id="trackResult">
+          <div class="res-status">
+            <span class="res-ref" id="resRef"></span>
+            <span class="res-pill" id="resPill"></span>
+          </div>
+          <div class="route-ports">
+            <div>
+              <div class="route-port-name" id="resOrigin"></div>
+              <div class="route-port-sub">Puerto origen</div>
+            </div>
+            <div style="text-align:right">
+              <div class="route-port-name" id="resDest"></div>
+              <div class="route-port-sub">Destino</div>
+            </div>
+          </div>
+          <div class="route-track">
+            <div class="route-fill" id="resFill" style="width:0%"></div>
+            <span class="route-ship-icon" id="resShip" style="left:0%">⚓</span>
+          </div>
+          <div class="route-pct" id="resPct"></div>
+          <div class="res-meta">
+            <div class="res-meta-item"><label>ETA</label><strong id="resETA"></strong></div>
+            <div class="res-meta-item"><label>Posición</label><strong id="resPos"></strong></div>
+          </div>
+          <div class="cont-label">Contenedores</div>
+          <div class="cont-list" id="contList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE STATEMENT -->
+<section class="marquee-section">
+  <div class="marquee-grid">
+    <div class="marquee-meta">
+      <div><strong>Manifiesto</strong>Forwarding honesto</div>
+      <div><strong>Sección 01</strong>Lo que hacemos</div>
+    </div>
+    <div>
+      <p class="marquee-text reveal">
+        No <span class="strike">prometemos</span>: <span class="em">cumplimos.</span> No improvisamos. No <span class="strike">desaparecemos</span> cuando algo se complica. Tu carga viaja con un equipo que <span class="blk">sabe cómo</span> mover contenedores desde <span class="em">Shanghái</span> hasta tu almacén — con documentación clara, comunicación directa y <span class="em">cero letra chica</span>.
+      </p>
+      <div class="marquee-stats reveal">
+        <div class="mstat">
+          <div class="mstat-num">800<em>+</em></div>
+          <div class="mstat-label">Contenedores<br>movidos al año</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">~<em>2</em></div>
+          <div class="mstat-label">Décadas<br>navegando juntos</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">24<em>/7</em></div>
+          <div class="mstat-label">Seguimiento<br>activo</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">2<em>×</em></div>
+          <div class="mstat-label">Mar y tierra<br>integrados</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mscroll">
+    <div class="mscroll-track">
+      <span class="mscroll-item">Ensenada</span>
+      <span class="mscroll-item">Shanghái</span>
+      <span class="mscroll-item">Busan</span>
+      <span class="mscroll-item">Hamburgo</span>
+      <span class="mscroll-item">Long Beach</span>
+      <span class="mscroll-item">Manzanillo</span>
+      <span class="mscroll-item">Rotterdam</span>
+      <span class="mscroll-item">Yokohama</span>
+      <span class="mscroll-item">Ensenada</span>
+      <span class="mscroll-item">Shanghái</span>
+      <span class="mscroll-item">Busan</span>
+      <span class="mscroll-item">Hamburgo</span>
+      <span class="mscroll-item">Long Beach</span>
+      <span class="mscroll-item">Manzanillo</span>
+      <span class="mscroll-item">Rotterdam</span>
+      <span class="mscroll-item">Yokohama</span>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="services-wrap" id="servicios">
+  <div class="services-inner">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-eyebrow">Sec. 02 — Servicios</div>
+        <h2 class="section-h">Lo que <em>hacemos</em><br>mejor que nadie.</h2>
+      </div>
+      <p class="section-sub">Especialistas en importación marítima desde <b>Asia, Europa y América</b>. Del puerto de Ensenada a tu almacén — sin interrupciones, sin transferencias innecesarias.</p>
+    </div>
+
+    <div class="svc-grid reveal">
+      <div class="svc-card">
+        <div class="svc-img">
+          <img src="https://pics.bforward.com.mx/api/files/fotos/h6c88kqx2oqbzqp/pexels_sascha_hormel_1095814_xc1lzcq7q3.jpg" alt="Importación marítima"/>
+          <div class="svc-img-num">01 / Marítimo</div>
+          <div class="svc-img-tag">FCL · LCL · Despacho aduanal</div>
+        </div>
+        <div class="svc-body">
+          <h3 class="svc-title">Importación <em>marítima</em></h3>
+          <p class="svc-desc">Gestionamos tu importación completa: naviera, aduana, documentación y seguimiento hasta descarga en puerto de Ensenada.</p>
+          <div class="svc-list">
+            <div class="svc-item"><span class="svc-item-num">01</span>Booking y consolidación FCL/LCL<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">02</span>Despacho aduanal coordinado<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">03</span>Gestión de BL y pedimentos<span class="svc-item-arrow">→</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="svc-card">
+        <div class="svc-img">
+          <img src="https://pics.bforward.com.mx/api/files/pbc_12761900/77h90ac2i6y6tra/pexels_quintin_gellar_2199293_nmnjohipt0.jpg" alt="Coordinación terrestre"/>
+          <div class="svc-img-num">02 / Terrestre</div>
+          <div class="svc-img-tag">Door-to-Door · Tracking en vivo</div>
+        </div>
+        <div class="svc-body">
+          <h3 class="svc-title">Coordinación <em>terrestre</em></h3>
+          <p class="svc-desc">De la terminal al almacén. Coordinación directa con transportistas, programación de unidades y seguimiento punto a punto.</p>
+          <div class="svc-list">
+            <div class="svc-item"><span class="svc-item-num">01</span>Flete terrestre nacional<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">02</span>Programación de unidades<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">03</span>Entrega final puerta a puerta<span class="svc-item-arrow">→</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="svc-card">
+        <div class="svc-img">
+          <img src="https://pics.bforward.com.mx/api/files/fotos/6a853uchu67ulno/image2_p8t41wckak.jpeg" alt="Portal y seguimiento"/>
+          <div class="svc-img-num">03 / Tech</div>
+          <div class="svc-img-tag">Portal seguro · Documentos · 24/7</div>
+        </div>
+        <div class="svc-body">
+          <h3 class="svc-title">Seguimiento <em>& portal</em></h3>
+          <p class="svc-desc">Consulta el estatus de tus embarques, revisa documentos y mantente comunicado con tu ejecutivo desde tu portal de cliente.</p>
+          <div class="svc-list">
+            <div class="svc-item"><span class="svc-item-num">01</span>Tracking web en tiempo real<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">02</span>Repositorio documental seguro<span class="svc-item-arrow">→</span></div>
+            <div class="svc-item"><span class="svc-item-num">03</span>Notificaciones proactivas<span class="svc-item-arrow">→</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section class="process-wrap" id="proceso">
+  <div class="process-inner">
+    <div class="process-grid">
+      <div class="process-img-stack reveal">
+        <div class="pimg pimg-1">
+          <img src="https://pics.bforward.com.mx/api/files/fotos/blpjvmsipiswp5c/pexels_martin_damboldt_799091_3afc49xgg3.jpg" alt="Operación portuaria"/>
+        </div>
+        <div class="pimg-tag pimg-tag-1">◉ Etapa 02 · Tránsito</div>
+        <div class="pimg pimg-2">
+          <img src="https://pics.bforward.com.mx/api/files/fotos/3m5bt1tel0g9nmu/background_image_033fsv4cm3.jpg" alt="Logística terrestre"/>
+        </div>
+        <div class="pimg-tag pimg-tag-2">◉ Etapa 04 · Entrega</div>
+      </div>
+
+      <div class="reveal">
+        <div class="section-eyebrow">Sec. 03 — Proceso</div>
+        <h2 class="section-h" style="margin-bottom:20px">Cinco etapas.<br><em>Cero sorpresas.</em></h2>
+        <p class="section-sub" style="margin-bottom:40px">Desde que zarpa el barco hasta que entra a tu almacén — cada etapa tiene seguimiento, documentación y coordinación activa con tu ejecutivo de cuenta.</p>
+
+        <div class="process-steps">
+          <div class="pstep">
+            <div class="pstep-num">01 / 05</div>
+            <div class="pstep-content">
+              <strong>Booking <em>& confirmación</em></strong>
+              <p>Reserva con la naviera, validación de documentos y confirmación de zarpe.</p>
+            </div>
+            <div class="pstep-icon">⚓</div>
+          </div>
+          <div class="pstep">
+            <div class="pstep-num">02 / 05</div>
+            <div class="pstep-content">
+              <strong>Tránsito <em>marítimo</em></strong>
+              <p>Monitoreo continuo del buque, posición en tiempo real y notificación de cambios de itinerario.</p>
+            </div>
+            <div class="pstep-icon">🌊</div>
+          </div>
+          <div class="pstep">
+            <div class="pstep-num">03 / 05</div>
+            <div class="pstep-content">
+              <strong>Arribo <em>& despacho</em></strong>
+              <p>Coordinación de descarga en Ensenada, despacho aduanal y liberación del contenedor.</p>
+            </div>
+            <div class="pstep-icon">⚙</div>
+          </div>
+          <div class="pstep">
+            <div class="pstep-num">04 / 05</div>
+            <div class="pstep-content">
+              <strong>Coordinación <em>terrestre</em></strong>
+              <p>Asignación de transporte, programación de cita y seguimiento hasta destino final.</p>
+            </div>
+            <div class="pstep-icon">🚛</div>
+          </div>
+          <div class="pstep">
+            <div class="pstep-num">05 / 05</div>
+            <div class="pstep-content">
+              <strong>Cierre <em>& reporte</em></strong>
+              <p>Confirmación de entrega, devolución de equipo vacío y reporte final del expediente.</p>
+            </div>
+            <div class="pstep-icon">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RUTAS -->
+<section class="routes-wrap" id="rutas">
+  <div class="routes-inner">
+    <div class="routes-head reveal">
+      <div>
+        <div class="section-eyebrow">Sec. 04 — Rutas activas</div>
+        <h2 class="section-h">Operamos donde<br><em>otros no llegan.</em></h2>
+      </div>
+      <p class="section-sub">Conexiones directas a las principales rutas del <b>Pacífico y Atlántico</b>. Estas son nuestras rutas activas y embarques en curso esta semana.</p>
+    </div>
+
+    <div class="routes-table reveal">
+      <div class="route-row header">
+        <div>Ref</div>
+        <div>Origen</div>
+        <div>Destino</div>
+        <div>Estado</div>
+        <div>ETA</div>
+        <div style="text-align:right">% recorrido</div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">01</div>
+        <div class="route-port">Shanghái <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">CNSHA</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status live">En tránsito</span></div>
+        <div class="route-eta">18 May 2026</div>
+        <div style="text-align:right"><span class="route-arrow">62%</span></div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">02</div>
+        <div class="route-port">Busan <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">KRPUS</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status">En puerto</span></div>
+        <div class="route-eta">05 May 2026</div>
+        <div style="text-align:right"><span class="route-arrow">96%</span></div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">03</div>
+        <div class="route-port">Hamburgo <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">DEHAM</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status live">En tránsito</span></div>
+        <div class="route-eta">02 Jun 2026</div>
+        <div style="text-align:right"><span class="route-arrow">38%</span></div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">04</div>
+        <div class="route-port">Yokohama <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">JPYOK</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status live">En tránsito</span></div>
+        <div class="route-eta">22 May 2026</div>
+        <div style="text-align:right"><span class="route-arrow">51%</span></div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">05</div>
+        <div class="route-port">Long Beach <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">USLGB</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status">Zarpe confirmado</span></div>
+        <div class="route-eta">10 May 2026</div>
+        <div style="text-align:right"><span class="route-arrow">12%</span></div>
+      </div>
+      <div class="route-row">
+        <div class="route-num">06</div>
+        <div class="route-port">Rotterdam <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">NLRTM</span></div>
+        <div class="route-port">Ensenada <span style="font-family:'JetBrains Mono',monospace;font-style:normal;font-size:10px;color:rgba(232,238,245,0.4)">MXENS</span></div>
+        <div><span class="route-status live">En tránsito</span></div>
+        <div class="route-eta">28 May 2026</div>
+        <div style="text-align:right"><span class="route-arrow">44%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS -->
+<section class="about-wrap" id="nosotros">
+  <div class="about-inner">
+    <div class="about-imgs reveal">
+      <div class="aimg aimg-main">
+        <img src="https://pics.bforward.com.mx/api/files/fotos/ppdrqfqqra6q8qu/harbor_freight_blue_toned_images_iegxgrr39c.jpg" alt="Puerto de Ensenada"/>
+      </div>
+      <div class="aimg aimg-side">
+        <img src="https://pics.bforward.com.mx/api/files/fotos/3m5bt1tel0g9nmu/background_image_033fsv4cm3.jpg" alt="Operación logística"/>
+      </div>
+      <div class="aimg-stamp">
+        Ensenada<br>
+        <small>BCN · MX</small>
+      </div>
+    </div>
+
+    <div class="about-copy reveal">
+      <div class="section-eyebrow">Sec. 05 — Quiénes somos</div>
+      <h2 class="section-h">Ensenada<br><em>es nuestro puerto.</em></h2>
+      <p class="section-sub" style="margin-top:18px;margin-bottom:0">Base operativa en Ensenada con acceso directo al puerto y conexión a las principales rutas del Pacífico. <b>Equipo local, alcance internacional.</b></p>
+
+      <div class="about-quote">
+        "Un agente de carga de Baja California con la capacidad operativa de un forwarding internacional — y la cercanía de un equipo que conoce a cada cliente por su nombre."
+        <span class="about-quote-attr">— Filosofía operativa BFORWARD</span>
+      </div>
+
+      <div class="afeats">
+        <div class="afeat">
+          <div class="afeat-num">01</div>
+          <div>
+            <strong>Operación local, alcance global</strong>
+            <span>Puerto de Ensenada con conexiones directas a navieras del Pacífico y del Atlántico. Sin transbordos innecesarios.</span>
+          </div>
+        </div>
+        <div class="afeat">
+          <div class="afeat-num">02</div>
+          <div>
+            <strong>Gestión documental completa</strong>
+            <span>BL, facturas, pedimentos y toda la documentación de tu importación organizada en un solo expediente digital.</span>
+          </div>
+        </div>
+        <div class="afeat">
+          <div class="afeat-num">03</div>
+          <div>
+            <strong>Comunicación directa y proactiva</strong>
+            <span>Te avisamos antes de que preguntes. Sin intermediarios, sin sorpresas de último minuto, sin call centers.</span>
+          </div>
+        </div>
+        <div class="afeat">
+          <div class="afeat-num">04</div>
+          <div>
+            <strong>Equipo bilingüe (ES · EN)</strong>
+            <span>Comunicación fluida con tus proveedores en Asia, Europa y EE.UU. — y con tu equipo aquí en México.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLEET BAND -->
+<section class="fleet-band">
+  <div class="fleet-grid">
+    <div class="fleet-cell">
+      <img src="https://pics.bforward.com.mx/api/files/fotos/ztwqmy2zjg21ds1/pexels_julius_silver_753331_695x4a1pio.jpg" alt="Buque portacontenedores"/>
+      <div class="fleet-cell-overlay"></div>
+      <div class="fleet-cell-content">
+        <div class="fleet-cell-num">01 — Marítimo</div>
+        <div class="fleet-cell-title">Buques de <em>línea</em></div>
+      </div>
+    </div>
+    <div class="fleet-cell">
+      <img src="https://pics.bforward.com.mx/api/files/fotos/w0p7uhl65d9o35r/container_gdbba3245b_1280_s0s4lt9awj.jpg" alt="Contenedores"/>
+      <div class="fleet-cell-overlay"></div>
+      <div class="fleet-cell-content">
+        <div class="fleet-cell-num">02 — Equipo</div>
+        <div class="fleet-cell-title">FCL · <em>LCL</em></div>
+      </div>
+    </div>
+    <div class="fleet-cell">
+      <img src="https://pics.bforward.com.mx/api/files/pbc_12761900/mlytgv5t341goxx/pexels_pixabay_326410_fe4yarz6g8.jpg" alt="Logística terrestre"/>
+      <div class="fleet-cell-overlay"></div>
+      <div class="fleet-cell-content">
+        <div class="fleet-cell-num">03 — Terrestre</div>
+        <div class="fleet-cell-title">Door-to-<em>door</em></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contact-wrap" id="contacto">
+  <div class="contact-inner">
+    <div class="contact-head reveal">
+      <div class="section-eyebrow">Sec. 06 — Contacto</div>
+      <h2 class="section-h">Hablemos de<br><em>tu operación.</em></h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card reveal">
+        <div class="contact-card-head">
+          <div class="contact-card-eyebrow">Información de contacto</div>
+          <h3 class="contact-card-title">Aquí estamos.<br>Aquí <em>operamos.</em></h3>
+        </div>
+        <div class="contact-info-list">
+          <div class="cinfo-row">
+            <label>Email</label>
+            <a href="mailto:info@bforward.com.mx">info@bforward.com.mx</a>
+          </div>
+          <div class="cinfo-row">
+            <label>WhatsApp</label>
+            <a href="tel:+526465963718">+52 646 596 3718</a>
+          </div>
+          <div class="cinfo-row">
+            <label>Oficina</label>
+            <span>Av. Blancarte 723-3, Sección Primera<br>Ensenada, BC 22800 · México</span>
+          </div>
+          <div class="cinfo-row">
+            <label>Horario</label>
+            <span>Lun – Vie · 09:00 – 18:00<br>Tracking 24/7 en línea</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-cta reveal">
+        <div class="contact-cta-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <h3>¿Primera importación<br>con <em>nosotros?</em></h3>
+          <p>Cuéntanos tu operación y te damos una cotización clara — sin letra chica ni costos ocultos. Solo logística directa y comunicación honesta.</p>
+        </div>
+        <div class="cta-btns">
+          <button class="btn-cta-solid" onclick="window.open('mailto:info@bforward.com.mx?subject=Cotización%20de%20operación')">
+            Solicitar cotización
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button class="btn-cta-line" onclick="window.open('https://wa.me/526465963718')">
+            Escribir por WhatsApp
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="https://pics.bforward.com.mx/api/files/fotos/qn50l1ti8pbrexd/blogicstic_u6baysa8x6.png" alt="BFORWARD Logistics"/>
+        <p>Agente de carga marítima y terrestre con base en Ensenada, Baja California. Importación FCL/LCL desde Asia, Europa y América.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Servicios</h5>
+        <ul>
+          <li><a href="#servicios">Importación marítima</a></li>
+          <li><a href="#servicios">Coordinación terrestre</a></li>
+          <li><a href="#servicios">Despacho aduanal</a></li>
+          <li><a href="#servicios">Portal de clientes</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Compañía</h5>
+        <ul>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#proceso">Proceso</a></li>
+          <li><a href="#rutas">Rutas activas</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contacto</h5>
+        <ul>
+          <li><a href="mailto:info@bforward.com.mx">info@bforward.com.mx</a></li>
+          <li><a href="tel:+526465963718">+52 646 596 3718</a></li>
+          <li><span>Av. Blancarte 723-3<br>Ensenada, BC 22800</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <small>© 2026 BFORWARD Logistics · Todos los derechos reservados</small>
+      <div class="footer-coords">
+        <small>31°51'29"N 116°36'12"W</small>
+        <small>Est. 2009 · Ensenada, BC</small>
+      </div>
+    </div>
+
+    <div class="footer-mega">BFORWARD</div>
+  </div>
+</footer>
+
+<script>
+const EXPS=[
+  {ref:"BFW-2024-0891",status:"transit",origin:"CNSHA · Shanghái",dest:"MXENS · Ensenada",eta:"18 May 2026",pos:"Pacífico Norte",pct:62,containers:[{num:"MSCU7482901-1",type:"40'HC",eta:"18 May"},{num:"MSCU7482901-2",type:"40'HC",eta:"18 May"}]},
+  {ref:"BFW-2024-0756",status:"port",origin:"KRPUS · Busan",dest:"MXENS · Ensenada",eta:"05 May 2026",pos:"Puerto de Ensenada",pct:96,containers:[{num:"TCKU5531102-1",type:"20'DC",eta:"05 May"},{num:"TCKU5531102-2",type:"20'DC",eta:"05 May"},{num:"TCKU5531102-3",type:"20'DC",eta:"05 May"}]},
+  {ref:"BFW-2024-0612",status:"zarpe",origin:"DEHAM · Hamburgo",dest:"MXENS · Ensenada",eta:"02 Jun 2026",pos:"Canal de Panamá",pct:38,containers:[{num:"CMAU9912034-1",type:"40'HC",eta:"02 Jun"}]},
+];
+// Endpoint real del tracking público (Next.js app). Ajustar a producción.
+const TRACKING_API_BASE = 'https://app.bforward.com.mx/api/tracking';
+
+async function doTrack(){
+  const r = (document.getElementById('trackRef').value || '').trim();
+  const c = (document.getElementById('trackCont').value || '').trim();
+  const val = r || c;
+  if(!val){ document.getElementById('trackRef').focus(); return; }
+
+  // Loading state
+  const submitBtn = document.querySelector('.track-submit');
+  const origLabel = submitBtn ? submitBtn.innerHTML : '';
+  if(submitBtn){ submitBtn.disabled = true; submitBtn.innerHTML = 'Buscando...'; }
+
+  try {
+    const res = await fetch(`${TRACKING_API_BASE}/${encodeURIComponent(val)}`, { cache: 'no-store' });
+    if(!res.ok){
+      if(res.status === 404) throw new Error('No se encontró el embarque. Verifica el número de referencia o contáctanos.');
+      throw new Error('Error consultando el tracking. Intenta de nuevo más tarde.');
+    }
+    const found = await res.json();
+
+    // Pintar resultados
+    document.getElementById('resRef').textContent = found.ref || val;
+    document.getElementById('resOrigin').textContent = found.origin || '—';
+    document.getElementById('resDest').textContent = found.dest || '—';
+    document.getElementById('resETA').textContent = found.eta || '—';
+    document.getElementById('resPos').textContent = found.pos || '—';
+    document.getElementById('resPct').textContent = (found.pct ?? 0) + '% completado';
+
+    const pill = document.getElementById('resPill');
+    if(found.status === 'transit'){ pill.className = 'res-pill pill-transit'; pill.textContent = 'En tránsito'; }
+    else if(found.status === 'port'){ pill.className = 'res-pill pill-port'; pill.textContent = 'En puerto'; }
+    else if(found.status === 'delivered'){ pill.className = 'res-pill pill-port'; pill.textContent = 'Entregado'; }
+    else { pill.className = 'res-pill pill-zarpe'; pill.textContent = 'Zarpe confirmado'; }
+
+    const list = document.getElementById('contList');
+    list.innerHTML = '';
+    (found.containers || []).forEach(ct => {
+      const d = document.createElement('div');
+      d.className = 'cont-row';
+      d.innerHTML = `<span class="cont-num">${ct.num}</span><span class="cont-type">${ct.type}</span><span class="cont-eta">ETA ${ct.eta}</span>`;
+      list.appendChild(d);
+    });
+
+    document.getElementById('trackResult').classList.add('show');
+    setTimeout(() => {
+      const pct = found.pct ?? 0;
+      document.getElementById('resFill').style.width = pct + '%';
+      document.getElementById('resShip').style.left = 'calc(' + pct + '% - 14px)';
+    }, 120);
+
+  } catch(err) {
+    alert(err && err.message ? err.message : 'No se encontró el embarque. Verifica el número de referencia o contáctanos.');
+  } finally {
+    if(submitBtn){ submitBtn.disabled = false; submitBtn.innerHTML = origLabel; }
+  }
+}
+['trackRef','trackCont'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doTrack();}));
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
+},{threshold:0.12,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
