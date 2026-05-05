@@ -1270,8 +1270,8 @@ const EXPS=[
   {ref:"BFW-2024-0756",status:"port",origin:"KRPUS · Busan",dest:"MXENS · Ensenada",eta:"05 May 2026",pos:"Puerto de Ensenada",pct:96,containers:[{num:"TCKU5531102-1",type:"20'DC",eta:"05 May"},{num:"TCKU5531102-2",type:"20'DC",eta:"05 May"},{num:"TCKU5531102-3",type:"20'DC",eta:"05 May"}]},
   {ref:"BFW-2024-0612",status:"zarpe",origin:"DEHAM · Hamburgo",dest:"MXENS · Ensenada",eta:"02 Jun 2026",pos:"Canal de Panamá",pct:38,containers:[{num:"CMAU9912034-1",type:"40'HC",eta:"02 Jun"}]},
 ];
-// Endpoint real del tracking público (Next.js app). Ajustar a producción.
-const TRACKING_API_BASE = 'https://app.bforward.com.mx/api/tracking';
+// Endpoint real del tracking público (Next.js app — portal de BForward).
+const TRACKING_API_BASE = 'https://portal.bforward.com.mx/api/tracking';
 
 async function doTrack(){
   const r = (document.getElementById('trackRef').value || '').trim();
